@@ -1,0 +1,77 @@
+name: Build, Smoke-Test, and Publish Images
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.list.outputs.images }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: List image folders under images/
+        id: list
+        run: |
+          images=$(find images -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "images=$images" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: discover
+    strategy:
+      matrix:
+        image: ${{ fromJson(needs.discover.outputs.images) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Compute lowercase image name
+        id: image
+        run: |
+          echo "name=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')/${{ matrix.image }}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and smoke-test image
+        uses: devcontainers/ci@v0.3
+        with:
+          subFolder: images/${{ matrix.image }}
+          imageName: ${{ steps.image.outputs.name }}
+          cacheFrom: ${{ steps.image.outputs.name }}
+          runCmd: bash smoke-test.sh
+
+      - name: Compute tags
+        if: github.event_name == 'push'
+        id: tags
+        run: |
+          date_tag=$(date +%Y-%m-%d)
+          tags="${{ steps.image.outputs.name }}:latest,${{ steps.image.outputs.name }}:$date_tag"
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            version="${{ github.ref_name }}"
+            major="${version%%.*}"
+            tags="$tags,${{ steps.image.outputs.name }}:$version,${{ steps.image.outputs.name }}:$major"
+          fi
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: images/${{ matrix.image }}/Dockerfile
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}

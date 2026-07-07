@@ -1,0 +1,10 @@
+{
+  "id": "git-askpass",
+  "version": "1.0.0",
+  "name": "Git bot-account askpass helper",
+  "description": "Installs a GIT_ASKPASS helper that authenticates git operations using GITHUB_TOKEN. Opt-in only: use on repos where Claude Code should commit/push as a separate bot account rather than as you.",
+  "options": {},
+  "containerEnv": {
+    "GIT_ASKPASS": "/usr/local/bin/git-askpass"
+  }
+}

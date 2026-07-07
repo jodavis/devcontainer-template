@@ -1,0 +1,24 @@
+[
+  {
+    "name": "claude-settings",
+    "livePath": "$HOME/.claude/settings.json",
+    "baselinePath": "$HOME/.claude/.promote-baseline/claude-settings.json",
+    "templateRelPath": "defaults/claude-settings.json",
+    "promotableKeys": [
+      "permissions.allow"
+    ]
+  },
+  {
+    "name": "srt-settings",
+    "livePath": "$HOME/.srt-settings.json",
+    "baselinePath": "$HOME/.claude/.promote-baseline/srt-settings.json",
+    "templateRelPath": "defaults/srt-settings.json",
+    "promotableKeys": [
+      "network.allowedDomains",
+      "network.deniedDomains",
+      "filesystem.allowWrite",
+      "filesystem.denyRead",
+      "filesystem.denyWrite"
+    ]
+  }
+]

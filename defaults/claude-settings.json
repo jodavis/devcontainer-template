@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/claude-code-settings.json",
+  "defaultMode": "auto",
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(jq:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(xargs:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(curl:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(sort:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(chmod:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "Agent(*)",
+      "Skill(*)",
+      "Monitor",
+      "mcp__microsoft-learn__*",
+      "mcp__github__*"
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "agent-plugins": {
+      "source": {
+        "source": "directory",
+        "path": "/workspaces/agent-plugins"
+      }
+    }
+  },
+  "tui": "fullscreen",
+  "theme": "dark",
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true
+}

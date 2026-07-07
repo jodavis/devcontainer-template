@@ -1,0 +1,9 @@
+{
+    "name": "devcontainer-template base image (dev)",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": "../../.."
+    },
+    "workspaceFolder": "/workspaces/devcontainer-template",
+    "remoteUser": "vscode"
+}
