@@ -52,7 +52,7 @@ jobs:
           subFolder: images/${{ matrix.image }}
           imageName: ${{ steps.image.outputs.name }}
           cacheFrom: ${{ steps.image.outputs.name }}
-          runCmd: bash smoke-test.sh
+          runCmd: bash images/${{ matrix.image }}/smoke-test.sh
 
       - name: Compute tags
         if: github.event_name == 'push'
