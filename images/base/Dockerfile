@@ -51,8 +51,15 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# 5.1. Enable Yarn for package management
-RUN corepack enable
+# 5.1. Enable Yarn for package management.
+#      `corepack enable` only installs the shim; Yarn itself is fetched on first
+#      invocation into the invoking user's cache. Pre-fetch it now into a shared,
+#      world-readable COREPACK_HOME so it's already cached before post-create.sh
+#      runs as vscode (no network round-trip needed at container-creation time).
+ENV COREPACK_HOME=/usr/local/share/corepack
+RUN corepack enable \
+    && corepack prepare yarn@stable --activate \
+    && chmod -R a+rX "$COREPACK_HOME"
 
 # 6. Claude Code CLI (global npm install, accessible to all users)
 RUN npm install -g @anthropic-ai/claude-code
