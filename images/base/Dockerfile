@@ -25,11 +25,19 @@ RUN curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/packages-micro
         -o /tmp/packages-microsoft-prod.deb \
     && dpkg -i /tmp/packages-microsoft-prod.deb && rm /tmp/packages-microsoft-prod.deb \
     && apt-get update \
-    && apt-get install -y --no-install-recommends dotnet-sdk-10.0 powershell \
+    && apt-get install -y --no-install-recommends dotnet-sdk-10.0 \
     && rm -rf /var/lib/apt/lists/*
 
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
     DOTNET_NOLOGO=1
+
+# Microsoft's apt repo only publishes an amd64 .deb for PowerShell (no arm64
+# build), so `apt-get install powershell` fails on arm64. Install it as a
+# .NET global tool instead — it resolves the correct RID-specific runtime on
+# both architectures. --tool-path (not --global) puts pwsh in a shared,
+# world-readable location instead of root's per-user tool folder.
+RUN dotnet tool install --tool-path /usr/local/share/dotnet-tools PowerShell \
+    && ln -s /usr/local/share/dotnet-tools/pwsh /usr/local/bin/pwsh
 
 # 4. Playwright OS-level Chromium dependencies (not the browser binary itself —
 #    that depends on a consumer repo's own build output, see each project's
@@ -63,6 +71,12 @@ RUN corepack enable \
 
 # 6. Claude Code CLI (global npm install, accessible to all users)
 RUN npm install -g @anthropic-ai/claude-code
+
+# 6.1. Sandbox Runtime (SRT) — sandboxes tool calls using bubblewrap for
+#      filesystem/process isolation and socat to proxy the sandboxed network.
+RUN apt-get update && apt-get install -y --no-install-recommends bubblewrap socat \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install -g @anthropic-ai/sandbox-runtime
 
 # 7. Python 3.12 + test tooling shared by both consumers today.
 RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip python3-venv \

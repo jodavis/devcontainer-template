@@ -21,9 +21,18 @@ check_tool pwsh
 check_tool python3
 check_tool jq
 check_tool yarn
+check_tool bwrap
+check_tool socat
+check_tool srt
 
 echo 'Checking yarn runs without a network fetch (Corepack release must be pre-cached)...'
 COREPACK_ENABLE_NETWORK=0 yarn --version >/dev/null
+
+echo 'Checking pwsh actually runs (installed as a .NET global tool, not via apt)...'
+pwsh -NoProfile -Command 'exit 0'
+
+echo 'Checking srt (sandbox-runtime) actually runs...'
+srt --version >/dev/null
 
 echo 'Checking git version >= 2.48 (worktree.useRelativePaths support)...'
 GIT_VERSION="$(git --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
