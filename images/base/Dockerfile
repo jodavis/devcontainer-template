@@ -51,6 +51,9 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
+# 5.1. Enable Yarn for package management
+RUN corepack enable
+
 # 6. Claude Code CLI (global npm install, accessible to all users)
 RUN npm install -g @anthropic-ai/claude-code
 
