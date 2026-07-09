@@ -23,6 +23,7 @@ check_tool jq
 check_tool yarn
 check_tool bwrap
 check_tool socat
+check_tool rg
 check_tool srt
 
 echo 'Checking yarn runs without a network fetch (Corepack release must be pre-cached)...'

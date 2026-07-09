@@ -73,8 +73,9 @@ RUN corepack enable \
 RUN npm install -g @anthropic-ai/claude-code
 
 # 6.1. Sandbox Runtime (SRT) — sandboxes tool calls using bubblewrap for
-#      filesystem/process isolation and socat to proxy the sandboxed network.
-RUN apt-get update && apt-get install -y --no-install-recommends bubblewrap socat \
+#      filesystem/process isolation, socat to proxy the sandboxed network,
+#      and ripgrep for its file-search rules.
+RUN apt-get update && apt-get install -y --no-install-recommends bubblewrap socat ripgrep \
     && rm -rf /var/lib/apt/lists/* \
     && npm install -g @anthropic-ai/sandbox-runtime
 
